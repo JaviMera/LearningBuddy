@@ -4,7 +4,7 @@ package com.javier.learningbuddy.model;
  * Created by javie on 5/18/2017.
  */
 
-class VideoSnippet {
+public class VideoSnippet {
 
     public String publishedAt;
     public String title;

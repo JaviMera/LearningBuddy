@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by javie on 5/18/2017.
  */
 
-class Thumbnails {
+public class Thumbnails {
 
     @SerializedName("default")
     public Thumbnail low;
