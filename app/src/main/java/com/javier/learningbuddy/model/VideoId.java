@@ -8,4 +8,10 @@ public class VideoId {
 
     public String kind;
     public String videoId;
+
+    public VideoId(String kind, String videoId) {
+
+        this.kind = kind;
+        this.videoId = videoId;
+    }
 }

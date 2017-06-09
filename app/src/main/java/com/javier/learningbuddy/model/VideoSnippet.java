@@ -10,4 +10,12 @@ public class VideoSnippet {
     public String title;
     public String description;
     public Thumbnails thumbnails;
+
+    public VideoSnippet(String publishedAt, String title, String description, Thumbnails thumbnails) {
+
+        this.publishedAt = publishedAt;
+        this.title = title;
+        this.description = description;
+        this.thumbnails = thumbnails;
+    }
 }

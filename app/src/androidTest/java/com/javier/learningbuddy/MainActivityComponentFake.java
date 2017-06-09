@@ -1,6 +1,7 @@
 package com.javier.learningbuddy;
 
-import com.javier.learningbuddy.dagger.ActivityComponent;
+import com.javier.learningbuddy.dagger.MainActivityComponent;
+import com.javier.learningbuddy.dagger.MainActivityModule;
 
 import javax.inject.Singleton;
 
@@ -11,8 +12,8 @@ import dagger.Component;
  */
 
 @Singleton
-@Component(modules = MainActivityModuleFake.class)
-public interface MainActivityComponentFake extends ActivityComponent<MainActivityUITest>{
+@Component(modules = MainActivityModule.class)
+public interface MainActivityComponentFake extends MainActivityComponent{
 
     void inject(MainActivityUITest test);
 }

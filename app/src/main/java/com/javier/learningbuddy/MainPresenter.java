@@ -24,10 +24,4 @@ public class MainPresenter implements MainActivityPresenter {
     public Observable<Page> getVideos() {
         return null;
     }
-
-    @Override
-    public String getName() {
-
-        return "Real presenter";
-    }
 }

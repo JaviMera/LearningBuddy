@@ -17,7 +17,7 @@ public class MainActivityModule {
 
     @Provides
     @Singleton
-    MainActivityPresenter providePresenter() {
+    public MainActivityPresenter providePresenter() {
 
         return new MainPresenter();
     }

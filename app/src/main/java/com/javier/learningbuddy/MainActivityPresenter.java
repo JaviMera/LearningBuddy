@@ -14,5 +14,4 @@ public interface MainActivityPresenter {
 
     void setView(ActivityView view);
     Observable<Page> getVideos();
-    String getName();
 }

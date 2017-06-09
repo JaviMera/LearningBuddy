@@ -8,4 +8,10 @@ public class Item {
 
     public VideoId id;
     public VideoSnippet snippet;
+
+    public Item(VideoId id, VideoSnippet snippet) {
+
+        this.id = id;
+        this.snippet = snippet;
+    }
 }

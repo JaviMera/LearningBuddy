@@ -2,4 +2,5 @@
     <string name="app_name">LearningBuddy</string>
     <string name="search_hint">Search videos…</string>
     <string name="action_search_text">search</string>
+    <string name="search_no_results_text">No results found</string>
 </resources>

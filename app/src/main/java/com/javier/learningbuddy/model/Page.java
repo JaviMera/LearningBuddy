@@ -14,4 +14,9 @@ public class Page {
     public String regionCode;
     public List<Item> items;
     public PageInfo pageInfo;
+
+    public Page(List<Item> items) {
+
+        this.items = items;
+    }
 }

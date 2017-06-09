@@ -13,7 +13,7 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = MainActivityModule.class)
-public interface MainActivityComponent extends ActivityComponent<MainActivity>{
+public interface MainActivityComponent {
 
     void inject(MainActivity view);
 }
