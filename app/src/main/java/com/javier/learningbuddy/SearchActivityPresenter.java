@@ -10,7 +10,7 @@ import io.reactivex.Observable;
  * Created by javie on 5/30/2017.
  */
 
-public interface MainActivityPresenter {
+public interface SearchActivityPresenter {
 
     void setView(ActivityView view);
     Observable<Page> getVideos();

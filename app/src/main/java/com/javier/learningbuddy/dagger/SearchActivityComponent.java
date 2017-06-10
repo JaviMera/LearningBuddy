@@ -1,7 +1,7 @@
 package com.javier.learningbuddy.dagger;
 
-import com.javier.learningbuddy.ActivityView;
 import com.javier.learningbuddy.MainActivity;
+import com.javier.learningbuddy.SearchActivity;
 
 import javax.inject.Singleton;
 
@@ -12,8 +12,8 @@ import dagger.Component;
  */
 
 @Singleton
-@Component(modules = MainActivityModule.class)
-public interface MainActivityComponent {
+@Component(modules = SearchActivityModule.class)
+public interface SearchActivityComponent {
 
-    void inject(MainActivity view);
+    void inject(SearchActivity view);
 }

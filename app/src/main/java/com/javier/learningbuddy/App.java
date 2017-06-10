@@ -3,9 +3,9 @@ package com.javier.learningbuddy;
 import android.app.Application;
 import android.support.annotation.VisibleForTesting;
 
-import com.javier.learningbuddy.dagger.DaggerMainActivityComponent;
-import com.javier.learningbuddy.dagger.MainActivityComponent;
-import com.javier.learningbuddy.dagger.MainActivityModule;
+import com.javier.learningbuddy.dagger.DaggerSearchActivityComponent;
+import com.javier.learningbuddy.dagger.SearchActivityComponent;
+import com.javier.learningbuddy.dagger.SearchActivityModule;
 
 /**
  * Created by javie on 5/30/2017.
@@ -13,25 +13,25 @@ import com.javier.learningbuddy.dagger.MainActivityModule;
 
 public class App extends Application {
 
-    private MainActivityComponent mainComponent;
+    private SearchActivityComponent searchComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        this.mainComponent = DaggerMainActivityComponent.builder()
-            .mainActivityModule(new MainActivityModule())
+        this.searchComponent = DaggerSearchActivityComponent.builder()
+            .searchActivityModule(new SearchActivityModule())
             .build();
     }
 
-    public MainActivityComponent getComponent() {
+    public SearchActivityComponent getComponent() {
 
-        return mainComponent;
+        return searchComponent;
     }
 
     @VisibleForTesting
-    public void setComponent(MainActivityComponent component) {
+    public void setComponent(SearchActivityComponent component) {
 
-        this.mainComponent = component;
+        this.searchComponent = component;
     }
 }

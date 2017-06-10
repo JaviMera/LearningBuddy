@@ -40,6 +40,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> implem
 
         Item currentItem = this.items.get(position);
         holder.setTitle(currentItem.snippet.title);
+        holder.setChannelTitle(currentItem.snippet.channelTitle);
     }
 
     @Override

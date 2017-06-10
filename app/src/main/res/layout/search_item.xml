@@ -10,7 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="Some amazing video title"
-        android:padding="10dp"
-        android:gravity="center"/>
+        android:padding="5dp"
+        android:gravity="center|start"/>
+
+    <TextView
+        android:id="@+id/itemChannelTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="WeAreAllHarambe"
+        android:padding="5dp"
+        android:gravity="center|start"/>
 
 </LinearLayout>
