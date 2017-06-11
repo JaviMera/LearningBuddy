@@ -7,6 +7,13 @@ package com.javier.learningbuddy.model;
 public class Thumbnail {
 
     public String url;
-    public String width;
-    public String height;
+    public int width;
+    public int height;
+
+    public Thumbnail(String url, int width, int height) {
+
+        this.url = url;
+        this.width = width;
+        this.height = height;
+    }
 }

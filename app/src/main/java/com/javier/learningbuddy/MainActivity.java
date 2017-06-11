@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import com.jakewharton.rxbinding.view.RxMenuItem;
 import com.javier.learningbuddy.R;
 import com.javier.learningbuddy.adapters.SearchAdapter;
 import com.javier.learningbuddy.model.Page;
+import com.squareup.picasso.Picasso;
 
 import org.mockito.internal.matchers.And;
 
@@ -45,6 +47,9 @@ import rx.functions.Action1;
 public class MainActivity extends AppCompatActivity implements ActivityView {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    @BindView(R.id.image)
+    ImageView imageView;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;

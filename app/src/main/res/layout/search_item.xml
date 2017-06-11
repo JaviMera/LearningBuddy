@@ -1,24 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
 
-    <TextView
-        android:id="@+id/itemTitle"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/itemThumnail"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:text="Some amazing video title"
-        android:padding="5dp"
-        android:gravity="center|start"/>
+        android:layout_weight="1"
+        tools:src="@mipmap/ic_launcher"/>
 
-    <TextView
-        android:id="@+id/itemChannelTitle"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:text="WeAreAllHarambe"
-        android:padding="5dp"
-        android:gravity="center|start"/>
+        android:layout_weight="3"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/itemTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Some amazing video title"
+            android:padding="5dp"
+            android:gravity="center|start"/>
+
+        <TextView
+            android:id="@+id/itemChannelTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="WeAreAllHarambe"
+            android:padding="5dp"
+            android:gravity="center|start"/>
+
+    </LinearLayout>
 
 </LinearLayout>

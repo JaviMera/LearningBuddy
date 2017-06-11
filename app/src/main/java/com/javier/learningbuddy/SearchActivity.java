@@ -62,7 +62,8 @@ public class SearchActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Display the home button when the activity launches
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Hide the delete icon when the activity launches since we only want to display it
         // when the user types text in the search view

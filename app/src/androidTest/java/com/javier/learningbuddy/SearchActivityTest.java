@@ -9,12 +9,14 @@ import android.support.v7.widget.RecyclerView;
 import com.javier.learningbuddy.adapters.SearchViewHolder;
 import com.javier.learningbuddy.model.Item;
 import com.javier.learningbuddy.model.Page;
+import com.javier.learningbuddy.model.Thumbnail;
 import com.javier.learningbuddy.model.Thumbnails;
 import com.javier.learningbuddy.model.VideoId;
 import com.javier.learningbuddy.model.VideoSnippet;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,11 +75,12 @@ public class SearchActivityTest {
         String searchText = "Harambe";
         String title = "Harambe American Hero";
         String channelTitle = "Javi Merca";
+        Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
         when(this.presenter.getVideos()).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
             {
                 add(new Item(
                     new VideoId("gorilla", "123456789"),
-                    new VideoSnippet("publication", title, "amazing video about a gorilla being murdered", new Thumbnails(), channelTitle))
+                    new VideoSnippet("publication", title, "amazing video about a gorilla being murdered", new Thumbnails(lowRes), channelTitle))
                 );
             }
         })));
@@ -89,6 +92,7 @@ public class SearchActivityTest {
         // Assert
         onView(withId(R.id.searchResultsRecycler)).check(matches(new TitleMatcher(title)));
         onView(withId(R.id.searchResultsRecycler)).check(matches(new ChannelTitleMatcher(channelTitle)));
+        onView(withId(R.id.searchResultsRecycler)).check(matches(new ThumbnailMatcher(lowRes)));
     }
 
     private class TitleMatcher extends BaseMatcher {
@@ -129,6 +133,30 @@ public class SearchActivityTest {
             RecyclerView recyclerView = (RecyclerView)view;
             SearchViewHolder viewHolder = (SearchViewHolder) recyclerView.findViewHolderForAdapterPosition(0);
             return viewHolder.getChannelTitle().equals(this.channelTitle);
+        }
+
+        @Override
+        public void describeTo(Description description) {
+
+        }
+    }
+
+    private class ThumbnailMatcher extends BaseMatcher{
+
+
+        private final Thumbnail thumbnail;
+
+        public ThumbnailMatcher(Thumbnail thumbnail) {
+
+            this.thumbnail = thumbnail;
+        }
+
+        @Override
+        public boolean matches(Object view) {
+
+            RecyclerView recyclerView = (RecyclerView)view;
+            SearchViewHolder viewHolder = (SearchViewHolder) recyclerView.findViewHolderForAdapterPosition(0);
+            return viewHolder.getThumbnail().getDrawable() != null;
         }
 
         @Override

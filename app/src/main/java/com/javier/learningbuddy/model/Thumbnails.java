@@ -13,4 +13,8 @@ public class Thumbnails {
 
     public Thumbnail medium;
     public Thumbnail high;
+
+    public Thumbnails(Thumbnail low) {
+        this.low = low;
+    }
 }
