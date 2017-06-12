@@ -48,9 +48,6 @@ public class MainActivity extends AppCompatActivity implements ActivityView {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    @BindView(R.id.image)
-    ImageView imageView;
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 

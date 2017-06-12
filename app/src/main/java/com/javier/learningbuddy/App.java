@@ -20,7 +20,7 @@ public class App extends Application {
         super.onCreate();
 
         this.searchComponent = DaggerSearchActivityComponent.builder()
-            .searchActivityModule(new SearchActivityModule())
+            .searchActivityModule(new SearchActivityModule(this.getApplicationContext()))
             .build();
     }
 

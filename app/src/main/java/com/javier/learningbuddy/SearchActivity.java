@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -76,11 +77,14 @@ public class SearchActivity extends AppCompatActivity {
 
         RxTextView.textChanges(this.searchEditText)
             .observeOn(AndroidSchedulers.mainThread())
+            .skip(1)
             .subscribe(text -> {
 
                 presenter
-                    .getVideos()
+                    .getVideos(text.toString())
+                    .subscribeOn(Schedulers.io())
                     .flatMap(response -> Observable.fromIterable(response.items))
+                    .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
                     .subscribe(
                         searchAdapter,
                         error -> Log.e(TAG, error.getMessage())

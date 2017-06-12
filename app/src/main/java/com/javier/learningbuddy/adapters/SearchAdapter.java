@@ -52,7 +52,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> implem
 
     @Override
     public void accept(@NonNull Item item) throws Exception {
-
         this.items.add(item);
         this.notifyItemInserted(this.items.size() - 1);
     }

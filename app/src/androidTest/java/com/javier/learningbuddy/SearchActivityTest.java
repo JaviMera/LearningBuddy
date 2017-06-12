@@ -33,6 +33,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 /**
@@ -56,7 +57,7 @@ public class SearchActivityTest {
 
         SearchActivityComponentFake componentFake = DaggerSearchActivityComponentFake
             .builder()
-            .searchActivityModule(new SearchActivityModuleFake())
+            .searchActivityModule(new SearchActivityModuleFake(InstrumentationRegistry.getContext()))
             .build();
 
         App app = (App) InstrumentationRegistry
@@ -76,7 +77,7 @@ public class SearchActivityTest {
         String title = "Harambe American Hero";
         String channelTitle = "Javi Merca";
         Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
-        when(this.presenter.getVideos()).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
+        when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
             {
                 add(new Item(
                     new VideoId("gorilla", "123456789"),
