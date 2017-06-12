@@ -1,40 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp">
-
-    <ImageView
-        android:id="@+id/itemThumnail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        tools:src="@mipmap/ic_launcher"/>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="3dp"
+    app:cardUseCompatPadding="true"
+    app:cardPreventCornerOverlap="true">
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/itemThumnail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:src="@mipmap/ic_launcher"
+            android:scaleType="centerCrop"/>
 
         <TextView
             android:id="@+id/itemTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="Some amazing video title"
-            android:padding="5dp"
-            android:gravity="center|start"/>
+            android:textStyle="bold"
+            android:paddingTop="10dp"/>
 
         <TextView
             android:id="@+id/itemChannelTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="WeAreAllHarambe"
-            android:padding="5dp"
-            android:gravity="center|start"/>
+            android:textSize="14sp"
+            android:paddingTop="10dp"
+            android:gravity="start"/>
 
     </LinearLayout>
-
-</LinearLayout>
+</android.support.v7.widget.CardView>
