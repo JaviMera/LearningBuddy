@@ -1,11 +1,13 @@
 package com.javier.learningbuddy;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
 
+import com.javier.learningbuddy.adapters.SearchAdapter;
 import com.javier.learningbuddy.adapters.SearchViewHolder;
 import com.javier.learningbuddy.model.Item;
 import com.javier.learningbuddy.model.Page;
@@ -16,7 +18,6 @@ import com.javier.learningbuddy.model.VideoSnippet;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,7 +74,7 @@ public class SearchActivityTest {
     public void validSearchReturnsResponseWithItems() throws Exception {
 
         // Arrange
-        String searchText = "Harambe";
+        String searchText = "H";
         String title = "Harambe American Hero";
         String channelTitle = "Javi Merca";
         Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
@@ -82,6 +83,10 @@ public class SearchActivityTest {
                 add(new Item(
                     new VideoId("gorilla", "123456789"),
                     new VideoSnippet("publication", title, "amazing video about a gorilla being murdered", new Thumbnails(lowRes), channelTitle))
+                );
+                add(new Item(
+                        new VideoId("gorilla", "123456789"),
+                        new VideoSnippet("publication", title, "amazing video about a gorilla being murdered", new Thumbnails(lowRes), channelTitle))
                 );
             }
         })));
@@ -93,7 +98,70 @@ public class SearchActivityTest {
         // Assert
         onView(withId(R.id.searchResultsRecycler)).check(matches(new TitleMatcher(title)));
         onView(withId(R.id.searchResultsRecycler)).check(matches(new ChannelTitleMatcher(channelTitle)));
-        onView(withId(R.id.searchResultsRecycler)).check(matches(new ThumbnailMatcher(lowRes)));
+    }
+
+    @Test
+    public void EmptyResponseThenRecyclerEmpty() throws Exception {
+
+        // Arrange
+        String firstQuery = "s"; // assume this will return 1 result
+        String secondQuery = "dsajl"; // assume this will return 3 results
+        Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
+        when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
+            {
+                add(new Item(
+                        new VideoId("supkind", "supid"),
+                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes), "supchannel")));
+            }
+        })));
+
+        // Act
+        rule.launchActivity(new Intent());
+        onView(withId(R.id.searchEditText)).perform(typeText(firstQuery));
+
+        when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
+            {
+                add(new Item(
+                        new VideoId("supkind", "supid"),
+                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes), "supchannel")));
+                add(new Item(
+                        new VideoId("supkind", "supid"),
+                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes), "supchannel")));
+                add(new Item(
+                        new VideoId("supkind", "supid"),
+                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes), "supchannel")));
+            }
+        })));
+        onView(withId(R.id.searchEditText)).perform(typeText(secondQuery));
+
+        // Assert
+        int expectedItemCount = 3;
+        onView(withId(R.id.searchResultsRecycler)).check(matches(new RecyclerItemCountMatcher(expectedItemCount)));
+    }
+
+    private class RecyclerItemCountMatcher extends BaseMatcher {
+
+        private int expectedCount;
+
+        public RecyclerItemCountMatcher(int expectedCount) {
+
+            this.expectedCount = expectedCount;
+        }
+
+        @Override
+        public boolean matches(Object view) {
+
+            RecyclerView recyclerView = (RecyclerView)view;
+            SearchAdapter adapter = (SearchAdapter) recyclerView.getAdapter();
+
+            return this.expectedCount == adapter.getItemCount();
+        }
+
+        @Override
+        public void describeTo(Description description) {
+
+            description.appendText("item count is " + this.expectedCount);
+        }
     }
 
     private class TitleMatcher extends BaseMatcher {
@@ -144,20 +212,13 @@ public class SearchActivityTest {
 
     private class ThumbnailMatcher extends BaseMatcher{
 
-
-        private final Thumbnail thumbnail;
-
-        public ThumbnailMatcher(Thumbnail thumbnail) {
-
-            this.thumbnail = thumbnail;
-        }
-
         @Override
         public boolean matches(Object view) {
 
             RecyclerView recyclerView = (RecyclerView)view;
             SearchViewHolder viewHolder = (SearchViewHolder) recyclerView.findViewHolderForAdapterPosition(0);
-            return viewHolder.getThumbnail().getDrawable() != null;
+            Drawable drawable = viewHolder.getThumbnail().getDrawable();
+            return drawable != null;
         }
 
         @Override

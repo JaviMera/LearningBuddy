@@ -80,6 +80,9 @@ public class SearchActivity extends AppCompatActivity {
             .skip(1)
             .subscribe(text -> {
 
+                //Clear the adapter on every new query
+                searchAdapter.clear();
+
                 presenter
                     .getVideos(text.toString())
                     .subscribeOn(Schedulers.io())

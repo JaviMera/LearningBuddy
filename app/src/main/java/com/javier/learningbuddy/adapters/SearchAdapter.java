@@ -56,6 +56,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> implem
         this.notifyItemInserted(this.items.size() - 1);
     }
 
+    public void clear() {
+
+        int size = this.items.size();
+        this.items.clear();
+        this.notifyItemRangeRemoved(0, size);
+    }
+
     public Item get(int i) {
 
         return this.items.get(i);
