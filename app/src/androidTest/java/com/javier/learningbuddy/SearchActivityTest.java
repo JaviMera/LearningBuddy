@@ -30,11 +30,16 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.when;
 
 /**
@@ -71,6 +76,21 @@ public class SearchActivityTest {
     }
 
     @Test
+    public void deleteSearchIconClickClearsSearchEditText() throws Exception {
+
+        // Arrange
+        String searchText = "sup";
+
+        // Act
+        rule.launchActivity(new Intent());
+        onView(withId(R.id.searchEditText)).perform(typeText(searchText));
+        onView(withId(R.id.action_delete_text)).perform(click());
+
+        // Assert
+        onView(withId(R.id.searchEditText)).check(matches(withText("")));
+    }
+
+    @Test
     public void validSearchReturnsResponseWithItems() throws Exception {
 
         // Arrange
@@ -78,15 +98,17 @@ public class SearchActivityTest {
         String title = "Harambe American Hero";
         String channelTitle = "Javi Merca";
         Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
+        Thumbnail medRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 320, 180);
+        Thumbnail highRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 480, 360);
         when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
             {
                 add(new Item(
                     new VideoId("gorilla", "123456789"),
-                    new VideoSnippet("publication", title, "amazing video about a gorilla being murdered", new Thumbnails(lowRes), channelTitle))
+                    new VideoSnippet("publication", title, "amazing video about a gorilla being murdered", new Thumbnails(lowRes, medRes, highRes), channelTitle))
                 );
                 add(new Item(
                         new VideoId("gorilla", "123456789"),
-                        new VideoSnippet("publication", title, "amazing video about a gorilla being murdered", new Thumbnails(lowRes), channelTitle))
+                        new VideoSnippet("publication", title, "amazing video about a gorilla being murdered", new Thumbnails(lowRes, medRes, highRes), channelTitle))
                 );
             }
         })));
@@ -101,17 +123,19 @@ public class SearchActivityTest {
     }
 
     @Test
-    public void EmptyResponseThenRecyclerEmpty() throws Exception {
+    public void NewResponseClearsRecyclerItems() throws Exception {
 
         // Arrange
         String firstQuery = "s"; // assume this will return 1 result
         String secondQuery = "dsajl"; // assume this will return 3 results
         Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
+        Thumbnail medRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 320, 180);
+        Thumbnail highRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 480, 360);
         when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
             {
                 add(new Item(
                         new VideoId("supkind", "supid"),
-                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes), "supchannel")));
+                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes, medRes, highRes), "supchannel")));
             }
         })));
 
@@ -123,15 +147,16 @@ public class SearchActivityTest {
             {
                 add(new Item(
                         new VideoId("supkind", "supid"),
-                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes), "supchannel")));
+                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes, medRes, highRes), "supchannel")));
                 add(new Item(
                         new VideoId("supkind", "supid"),
-                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes), "supchannel")));
+                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes, medRes, highRes), "supchannel")));
                 add(new Item(
                         new VideoId("supkind", "supid"),
-                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes), "supchannel")));
+                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes, medRes, highRes), "supchannel")));
             }
         })));
+        onView(withId(R.id.searchEditText)).perform(clearText());
         onView(withId(R.id.searchEditText)).perform(typeText(secondQuery));
 
         // Assert

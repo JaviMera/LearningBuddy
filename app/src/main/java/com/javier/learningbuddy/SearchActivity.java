@@ -1,6 +1,5 @@
 package com.javier.learningbuddy;
 
-import android.app.SearchableInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +7,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -39,9 +41,6 @@ public class SearchActivity extends AppCompatActivity {
     @BindView(R.id.searchEditText)
     EditText searchEditText;
 
-    @BindView(R.id.deleteSearchText)
-    ImageView deleteTextImage;
-
     @BindView(R.id.searchResultsRecycler)
     RecyclerView searchResultsRecycler;
 
@@ -49,6 +48,32 @@ public class SearchActivity extends AppCompatActivity {
     SearchActivityPresenter presenter;
 
     private SearchAdapter searchAdapter;
+
+    @Override
+    public boolean onCreatePanelMenu(int featureId, Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_search, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.action_delete_text:
+
+                this.searchEditText
+                    .getText()
+                    .clear();
+
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,10 +90,6 @@ public class SearchActivity extends AppCompatActivity {
         // Display the home button when the activity launches
         if(getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // Hide the delete icon when the activity launches since we only want to display it
-        // when the user types text in the search view
-        this.deleteTextImage.setVisibility(View.GONE);
 
         this.searchAdapter = new SearchAdapter(new LinkedList<>());
         this.searchResultsRecycler.setAdapter(searchAdapter);

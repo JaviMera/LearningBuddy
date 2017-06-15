@@ -14,7 +14,9 @@ public class Thumbnails {
     public Thumbnail medium;
     public Thumbnail high;
 
-    public Thumbnails(Thumbnail low) {
+    public Thumbnails(Thumbnail low, Thumbnail med, Thumbnail high) {
         this.low = low;
+        this.medium = med;
+        this.high = high;
     }
 }
