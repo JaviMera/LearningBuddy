@@ -48,6 +48,10 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class SearchActivityTest {
 
+    private Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
+    private Thumbnail medRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 320, 180);
+    private Thumbnail highRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 480, 360);
+
     @Rule
     public ActivityTestRule<SearchActivity> rule = new ActivityTestRule<>(
         SearchActivity.class,
@@ -91,6 +95,27 @@ public class SearchActivityTest {
     }
 
     @Test
+    public void deleteQueryDisplaysNoResults() throws Exception {
+
+        // Arrange
+        String searchText = "I like turtles";
+        when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>() {
+            {
+                add(createItem("turtles", "1231231", "turtles", "I like turtles", "Zombie kid says I like turtles", "JaviMerca"));
+            }
+        })));
+
+        // Act
+        rule.launchActivity(new Intent());
+        onView(withId(R.id.searchEditText)).perform(typeText(searchText));
+        onView(withId(R.id.action_delete_text)).perform(click());
+
+        // Assert
+        int expectedItemCount = 0;
+        onView(withId(R.id.searchResultsRecycler)).check(matches(new RecyclerItemCountMatcher(expectedItemCount)));
+    }
+
+    @Test
     public void validSearchReturnsResponseWithItems() throws Exception {
 
         // Arrange
@@ -128,14 +153,9 @@ public class SearchActivityTest {
         // Arrange
         String firstQuery = "s"; // assume this will return 1 result
         String secondQuery = "dsajl"; // assume this will return 3 results
-        Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
-        Thumbnail medRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 320, 180);
-        Thumbnail highRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 480, 360);
         when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
             {
-                add(new Item(
-                        new VideoId("supkind", "supid"),
-                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes, medRes, highRes), "supchannel")));
+                add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
             }
         })));
 
@@ -145,15 +165,9 @@ public class SearchActivityTest {
 
         when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
             {
-                add(new Item(
-                        new VideoId("supkind", "supid"),
-                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes, medRes, highRes), "supchannel")));
-                add(new Item(
-                        new VideoId("supkind", "supid"),
-                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes, medRes, highRes), "supchannel")));
-                add(new Item(
-                        new VideoId("supkind", "supid"),
-                        new VideoSnippet("suppublication", "suptitle", "supdescription", new Thumbnails(lowRes, medRes, highRes), "supchannel")));
+                add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
+                add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
+                add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
             }
         })));
         onView(withId(R.id.searchEditText)).perform(clearText());
@@ -162,6 +176,13 @@ public class SearchActivityTest {
         // Assert
         int expectedItemCount = 3;
         onView(withId(R.id.searchResultsRecycler)).check(matches(new RecyclerItemCountMatcher(expectedItemCount)));
+    }
+
+    private Item createItem(String videoKind, String videoId, String publication, String title, String description, String channel) {
+
+        return new Item(
+            new VideoId(videoKind, videoId),
+            new VideoSnippet(publication, title, description, new Thumbnails(lowRes, medRes, highRes), channel));
     }
 
     private class RecyclerItemCountMatcher extends BaseMatcher {

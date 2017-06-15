@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +17,8 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.javier.learningbuddy.adapters.SearchAdapter;
+
+import org.w3c.dom.Text;
 
 import java.util.LinkedList;
 
@@ -96,9 +99,20 @@ public class SearchActivity extends AppCompatActivity {
         this.searchResultsRecycler.setLayoutManager(new LinearLayoutManager(this));
         this.searchResultsRecycler.setHasFixedSize(true);
 
+        // Subscription to handle empty queries after valid queries have been sent
+        // First item will be skipped since it will always be an empty query when activity launches
         RxTextView.textChanges(this.searchEditText)
             .observeOn(AndroidSchedulers.mainThread())
             .skip(1)
+            .filter(TextUtils::isEmpty)
+            .subscribe(text -> searchAdapter.clear());
+
+        // Subscription to handle valid queries
+        // First item will be skipped since it will always be an empty query when activity launches
+        RxTextView.textChanges(this.searchEditText)
+            .observeOn(AndroidSchedulers.mainThread())
+            .skip(1)
+            .filter(text -> !TextUtils.isEmpty(text))
             .subscribe(text -> {
 
                 //Clear the adapter on every new query
