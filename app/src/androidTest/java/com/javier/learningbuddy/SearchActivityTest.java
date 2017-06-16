@@ -35,7 +35,6 @@ import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
@@ -52,6 +51,13 @@ public class SearchActivityTest {
     private Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
     private Thumbnail medRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 320, 180);
     private Thumbnail highRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 480, 360);
+
+    private String title = "Zombie kid";
+    private String videoKind = "turtles";
+    private String videoId = "1231231";
+    private String publication = "turtles";
+    private String description = "Zombie kid says I like turtles";
+    private String channelId = "JaviMerca";
 
     @Rule
     public ActivityTestRule<SearchActivity> rule = new ActivityTestRule<>(
@@ -100,11 +106,7 @@ public class SearchActivityTest {
 
         // Arrange
         String searchText = "I like turtles";
-        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>() {
-            {
-                add(createItem("turtles", "1231231", "turtles", "I like turtles", "Zombie kid says I like turtles", "JaviMerca"));
-            }
-        })));
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(createPage(1)));
 
         // Act
         rule.launchActivity(new Intent());
@@ -121,23 +123,7 @@ public class SearchActivityTest {
 
         // Arrange
         String searchText = "H";
-        String title = "Harambe American Hero";
-        String channelTitle = "Javi Merca";
-        Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
-        Thumbnail medRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 320, 180);
-        Thumbnail highRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 480, 360);
-        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
-            {
-                add(new Item(
-                    new VideoId("gorilla", "123456789"),
-                    new VideoSnippet("publication", title, "amazing video about a gorilla being murdered", new Thumbnails(lowRes, medRes, highRes), channelTitle))
-                );
-                add(new Item(
-                        new VideoId("gorilla", "123456789"),
-                        new VideoSnippet("publication", title, "amazing video about a gorilla being murdered", new Thumbnails(lowRes, medRes, highRes), channelTitle))
-                );
-            }
-        })));
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(createPage(2)));
 
         // Act
         rule.launchActivity(new Intent());
@@ -145,7 +131,7 @@ public class SearchActivityTest {
 
         // Assert
         onView(withId(R.id.searchResultsRecycler)).check(matches(new TitleMatcher(title)));
-        onView(withId(R.id.searchResultsRecycler)).check(matches(new ChannelTitleMatcher(channelTitle)));
+        onView(withId(R.id.searchResultsRecycler)).check(matches(new ChannelTitleMatcher(channelId)));
     }
 
     @Test
@@ -154,23 +140,14 @@ public class SearchActivityTest {
         // Arrange
         String firstQuery = "s"; // assume this will return 1 result
         String secondQuery = "dsajl"; // assume this will return 3 results
-        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
-            {
-                add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
-            }
-        })));
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(createPage(1)));
 
         // Act
         rule.launchActivity(new Intent());
         onView(withId(R.id.searchEditText)).perform(typeText(firstQuery));
 
-        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
-            {
-                add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
-                add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
-                add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
-            }
-        })));
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(createPage(3)));
+
         onView(withId(R.id.searchEditText)).perform(clearText());
         onView(withId(R.id.searchEditText)).perform(typeText(secondQuery));
 
@@ -202,7 +179,7 @@ public class SearchActivityTest {
         return new Page(new LinkedList<Item>() {
             {
                 Observable.range(0, howManyItems)
-                    .subscribe(index -> add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel")))
+                    .subscribe(index -> add(createItem(videoKind, videoId, publication, title, description, channelId)))
                     .dispose();
             }
         });
