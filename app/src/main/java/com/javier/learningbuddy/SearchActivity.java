@@ -17,6 +17,7 @@ import android.widget.ImageView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.javier.learningbuddy.adapters.SearchAdapter;
+import com.javier.learningbuddy.model.Page;
 
 import org.w3c.dom.Text;
 
@@ -51,6 +52,7 @@ public class SearchActivity extends AppCompatActivity {
     SearchActivityPresenter presenter;
 
     private SearchAdapter searchAdapter;
+    private Page currentPage;
 
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
@@ -98,6 +100,35 @@ public class SearchActivity extends AppCompatActivity {
         this.searchResultsRecycler.setAdapter(searchAdapter);
         this.searchResultsRecycler.setLayoutManager(new LinearLayoutManager(this));
         this.searchResultsRecycler.setHasFixedSize(true);
+        this.searchResultsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int itemCount = layoutManager.getItemCount();
+
+                // When the user deletes the text query, don't activate the scrolling logic
+                // since we don't want any results
+                if(itemCount == 0)
+                    return;
+
+                if(itemCount == layoutManager.findLastCompletelyVisibleItemPosition() + 1) {
+
+                    // When the user scrolls to the bottom, send the current pageToken
+                    // in order to request the next page from our current set of results
+                    presenter
+                        .getVideos(searchEditText.getText().toString(), currentPage.nextPageToken)
+                        .subscribeOn(Schedulers.io())
+                        .map(response -> currentPage = response)
+                        .flatMap(response -> Observable.fromIterable(response.items))
+                        .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
+                        .subscribe(
+                                searchAdapter,
+                                error -> Log.e(TAG, error.getMessage())
+                        );
+                }
+            }
+        });
 
         // Subscription to handle empty queries after valid queries have been sent
         // First item will be skipped since it will always be an empty query when activity launches
@@ -118,9 +149,12 @@ public class SearchActivity extends AppCompatActivity {
                 //Clear the adapter on every new query
                 searchAdapter.clear();
 
+                // When the user types in a new query, always send a blank page token
+                // since this behavior will always return the first page of results
                 presenter
-                    .getVideos(text.toString())
+                    .getVideos(text.toString(), "")
                     .subscribeOn(Schedulers.io())
+                    .map(response -> this.currentPage = response)
                     .flatMap(response -> Observable.fromIterable(response.items))
                     .observeOn(io.reactivex.android.schedulers.AndroidSchedulers.mainThread())
                     .subscribe(

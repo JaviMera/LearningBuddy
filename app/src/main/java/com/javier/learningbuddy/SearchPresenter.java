@@ -40,9 +40,10 @@ public class SearchPresenter implements SearchActivityPresenter {
     }
 
     @Override
-    public Observable<Page> getVideos(String query) {
+    public Observable<Page> getVideos(String query, String pageToken) {
 
         this.youtubeParams.put("q", query);
+        this.youtubeParams.put("pageToken", pageToken);
 
         return this
             .youtubeService

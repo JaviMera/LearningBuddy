@@ -13,5 +13,5 @@ import io.reactivex.Observable;
 public interface SearchActivityPresenter {
 
     void setView(ActivityView view);
-    Observable<Page> getVideos(String query);
+    Observable<Page> getVideos(String query, String pageToken);
 }

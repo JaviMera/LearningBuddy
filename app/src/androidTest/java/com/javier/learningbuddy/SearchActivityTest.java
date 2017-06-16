@@ -3,6 +3,7 @@ package com.javier.learningbuddy;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
@@ -99,7 +100,7 @@ public class SearchActivityTest {
 
         // Arrange
         String searchText = "I like turtles";
-        when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>() {
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>() {
             {
                 add(createItem("turtles", "1231231", "turtles", "I like turtles", "Zombie kid says I like turtles", "JaviMerca"));
             }
@@ -125,7 +126,7 @@ public class SearchActivityTest {
         Thumbnail lowRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 120, 90);
         Thumbnail medRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 320, 180);
         Thumbnail highRes = new Thumbnail("android.resource://com.javier.learningbuddy/" + R.mipmap.ic_launcher, 480, 360);
-        when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
             {
                 add(new Item(
                     new VideoId("gorilla", "123456789"),
@@ -153,7 +154,7 @@ public class SearchActivityTest {
         // Arrange
         String firstQuery = "s"; // assume this will return 1 result
         String secondQuery = "dsajl"; // assume this will return 3 results
-        when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
             {
                 add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
             }
@@ -163,7 +164,7 @@ public class SearchActivityTest {
         rule.launchActivity(new Intent());
         onView(withId(R.id.searchEditText)).perform(typeText(firstQuery));
 
-        when(this.presenter.getVideos(any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(new Page(new LinkedList<Item>(){
             {
                 add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
                 add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel"));
@@ -178,6 +179,35 @@ public class SearchActivityTest {
         onView(withId(R.id.searchResultsRecycler)).check(matches(new RecyclerItemCountMatcher(expectedItemCount)));
     }
 
+    @Test
+    public void scrollingToBottomLoadsMoreResults() throws Exception {
+
+        // Arrange
+        String searchText = "batman";
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(createPage(20)));
+
+        // Act
+        rule.launchActivity(new Intent());
+        onView(withId(R.id.searchEditText)).perform(typeText(searchText));
+        onView(withId(R.id.searchResultsRecycler)).perform(RecyclerViewActions.scrollToPosition(19));
+
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(createPage(20)));
+
+        // Assert
+        onView(withId(R.id.searchResultsRecycler)).check(matches(new RecyclerItemCountMatcher(40)));
+    }
+
+    private Page createPage(int howManyItems) {
+
+        return new Page(new LinkedList<Item>() {
+            {
+                Observable.range(0, howManyItems)
+                    .subscribe(index -> add(createItem("supkind", "supid", "suppublication", "suptitle", "supdescription", "supchannel")))
+                    .dispose();
+            }
+        });
+    }
+
     private Item createItem(String videoKind, String videoId, String publication, String title, String description, String channel) {
 
         return new Item(
@@ -188,6 +218,7 @@ public class SearchActivityTest {
     private class RecyclerItemCountMatcher extends BaseMatcher {
 
         private int expectedCount;
+        private int actualCount;
 
         public RecyclerItemCountMatcher(int expectedCount) {
 
@@ -199,14 +230,15 @@ public class SearchActivityTest {
 
             RecyclerView recyclerView = (RecyclerView)view;
             SearchAdapter adapter = (SearchAdapter) recyclerView.getAdapter();
+            this.actualCount = adapter.getItemCount();
 
-            return this.expectedCount == adapter.getItemCount();
+            return this.expectedCount == this.actualCount;
         }
 
         @Override
         public void describeTo(Description description) {
 
-            description.appendText("item count is " + this.expectedCount);
+            description.appendText("Actual count: " + this.actualCount + "\nExpected count: " + this.expectedCount);
         }
     }
 
