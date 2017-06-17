@@ -22,6 +22,7 @@ import com.javier.learningbuddy.model.Page;
 import org.w3c.dom.Text;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -130,24 +131,15 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        // Subscription to handle empty queries after valid queries have been sent
-        // First item will be skipped since it will always be an empty query when activity launches
         RxTextView.textChanges(this.searchEditText)
             .observeOn(AndroidSchedulers.mainThread())
-            .skip(1)
-            .filter(TextUtils::isEmpty)
-            .subscribe(text -> searchAdapter.clear());
-
-        // Subscription to handle valid queries
-        // First item will be skipped since it will always be an empty query when activity launches
-        RxTextView.textChanges(this.searchEditText)
-            .observeOn(AndroidSchedulers.mainThread())
-            .skip(1)
-            .filter(text -> !TextUtils.isEmpty(text))
             .subscribe(text -> {
 
                 //Clear the adapter on every new query
                 searchAdapter.clear();
+
+                if(TextUtils.isEmpty(text))
+                    return;
 
                 // When the user types in a new query, always send a blank page token
                 // since this behavior will always return the first page of results
