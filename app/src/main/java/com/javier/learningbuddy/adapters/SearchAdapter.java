@@ -17,7 +17,7 @@ import io.reactivex.functions.Consumer;
  * Created by javie on 6/3/2017.
  */
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> implements Consumer<Item>{
+public class SearchAdapter extends Adapterbase<SearchViewHolder, Item>{
 
     private List<Item> items;
 
@@ -56,6 +56,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> implem
         this.notifyItemInserted(this.items.size() - 1);
     }
 
+    @Override
     public void clear() {
 
         int size = this.items.size();

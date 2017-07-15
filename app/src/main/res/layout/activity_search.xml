@@ -35,18 +35,29 @@
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp">
+        android:layout_marginEnd="10dp" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/searchResultsRecycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"/>
+    <FrameLayout
+        android:id="@+id/searchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp" />
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/suggestionsRecycler"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent" />-->
 
-    </FrameLayout>
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/searchResultsRecycler"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="10dp"/>-->
 
 </android.support.design.widget.CoordinatorLayout>

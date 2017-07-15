@@ -8,7 +8,6 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
 
-import com.javier.learningbuddy.adapters.SearchAdapter;
 import com.javier.learningbuddy.adapters.SearchViewHolder;
 import com.javier.learningbuddy.model.Item;
 import com.javier.learningbuddy.model.Page;
@@ -35,6 +34,7 @@ import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
@@ -87,10 +87,46 @@ public class SearchActivityTest {
     }
 
     @Test
+    public void searchQueryShowsSuggestions() throws Exception {
+
+        // Arrange
+        String searchText = "messi";
+        when(this.presenter.getSuggestions(any(String.class))).thenReturn(Observable.just("[lionel messi\",[lionel messi]]"));
+
+        // Act
+        rule.launchActivity(new Intent());
+        onView(withId(R.id.searchEditText)).perform(typeText(searchText));
+
+        // Assert
+        onView(withId(R.id.suggestionRecycler)).check(matches(new RecyclerItemCountMatcher<>(1)));
+    }
+
+    @Test
+    public void selectSuggestionShowsVideoResults() throws Exception {
+
+        // Arrange
+        String searchText = "harambe";
+        when(this.presenter.getSuggestions(any(String.class))).thenReturn(Observable.just("harambe national hero"));
+        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(createPage(1)));
+
+        // Act
+        rule.launchActivity(new Intent());
+        onView(withId(R.id.searchEditText)).perform(typeText(searchText));
+        onView(withId(R.id.suggestionRecycler)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+
+        // Arrange
+        onView(withId(R.id.suggestionRecycler)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.searchRecycler)).check(matches(new RecyclerItemCountMatcher<>(1)));
+        onView(withId(R.id.searchRecycler)).check(matches(new TitleMatcher(title)));
+        onView(withId(R.id.searchRecycler)).check(matches(new ChannelTitleMatcher(channelId)));
+    }
+
+    @Test
     public void deleteSearchIconClickClearsSearchEditText() throws Exception {
 
         // Arrange
         String searchText = "sup";
+        when(this.presenter.getSuggestions(any(String.class))).thenReturn(Observable.just("sup"));
 
         // Act
         rule.launchActivity(new Intent());
@@ -102,11 +138,11 @@ public class SearchActivityTest {
     }
 
     @Test
-    public void deleteQueryDisplaysNoResults() throws Exception {
+    public void deleteIconClickDisplayNoResults() throws Exception {
 
         // Arrange
         String searchText = "I like turtles";
-        when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(createPage(1)));
+        when(this.presenter.getSuggestions(any(String.class))).thenReturn(Observable.just("I like turtles"));
 
         // Act
         rule.launchActivity(new Intent());
@@ -114,8 +150,7 @@ public class SearchActivityTest {
         onView(withId(R.id.action_delete_text)).perform(click());
 
         // Assert
-        int expectedItemCount = 0;
-        onView(withId(R.id.searchResultsRecycler)).check(matches(new RecyclerItemCountMatcher(expectedItemCount)));
+        onView(withId(R.id.searchRecycler)).check(matches(new RecyclerItemCountMatcher(0)));
     }
 
     @Test
@@ -123,19 +158,21 @@ public class SearchActivityTest {
 
         // Arrange
         String searchText = "H";
+        when(this.presenter.getSuggestions(any(String.class))).thenReturn(Observable.just("Harambe"));
         when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(createPage(2)));
 
         // Act
         rule.launchActivity(new Intent());
         onView(withId(R.id.searchEditText)).perform(typeText(searchText));
+        onView(withId(R.id.searchRecycler)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         // Assert
-        onView(withId(R.id.searchResultsRecycler)).check(matches(new TitleMatcher(title)));
-        onView(withId(R.id.searchResultsRecycler)).check(matches(new ChannelTitleMatcher(channelId)));
+        onView(withId(R.id.searchRecycler)).check(matches(new TitleMatcher(title)));
+        onView(withId(R.id.searchRecycler)).check(matches(new ChannelTitleMatcher(channelId)));
     }
 
     @Test
-    public void NewResponseClearsRecyclerItems() throws Exception {
+    public void NewSearchBringsUpRecyclerSuggestions() throws Exception {
 
         // Arrange
         String firstQuery = "s"; // assume this will return 1 result
@@ -153,7 +190,7 @@ public class SearchActivityTest {
 
         // Assert
         int expectedItemCount = 3;
-        onView(withId(R.id.searchResultsRecycler)).check(matches(new RecyclerItemCountMatcher(expectedItemCount)));
+        onView(withId(R.id.searchRecycler)).check(matches(new RecyclerItemCountMatcher(expectedItemCount)));
     }
 
     @Test
@@ -166,12 +203,12 @@ public class SearchActivityTest {
         // Act
         rule.launchActivity(new Intent());
         onView(withId(R.id.searchEditText)).perform(typeText(searchText));
-        onView(withId(R.id.searchResultsRecycler)).perform(RecyclerViewActions.scrollToPosition(19));
+        onView(withId(R.id.searchRecycler)).perform(RecyclerViewActions.scrollToPosition(19));
 
         when(this.presenter.getVideos(any(String.class), any(String.class))).thenReturn(Observable.just(createPage(20)));
 
         // Assert
-        onView(withId(R.id.searchResultsRecycler)).check(matches(new RecyclerItemCountMatcher(40)));
+        onView(withId(R.id.searchRecycler)).check(matches(new RecyclerItemCountMatcher(40)));
     }
 
     private Page createPage(int howManyItems) {
@@ -192,7 +229,7 @@ public class SearchActivityTest {
             new VideoSnippet(publication, title, description, new Thumbnails(lowRes, medRes, highRes), channel));
     }
 
-    private class RecyclerItemCountMatcher extends BaseMatcher {
+    private class RecyclerItemCountMatcher<T extends RecyclerView.Adapter> extends BaseMatcher {
 
         private int expectedCount;
         private int actualCount;
@@ -206,7 +243,7 @@ public class SearchActivityTest {
         public boolean matches(Object view) {
 
             RecyclerView recyclerView = (RecyclerView)view;
-            SearchAdapter adapter = (SearchAdapter) recyclerView.getAdapter();
+            T adapter = (T) recyclerView.getAdapter();
             this.actualCount = adapter.getItemCount();
 
             return this.expectedCount == this.actualCount;

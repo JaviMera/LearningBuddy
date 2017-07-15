@@ -53,6 +53,6 @@ public class MainActivityUITest {
         // Assert that the search activity will be launched showing / not showing the following views
         onView(withId(R.id.searchEditText)).check(matches(isDisplayed()));
         onView(withId(R.id.action_delete_text)).check(matches(isDisplayed()));
-        onView(withId(R.id.searchResultsRecycler)).check(matches(isDisplayed()));
+        onView(withId(R.id.suggestionRecycler)).check(matches(isDisplayed()));
     }
 }
